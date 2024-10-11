@@ -6,16 +6,27 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  Touchable,
+  TouchableOpacity,
   View,
 } from 'react-native';
+import {Calendar, LocaleConfig} from 'react-native-calendars';
+import Modal from 'react-native-modal';
+import CustomCalender from '../Components/CustomCalender';
+import NewTask from '../Components/NewTask';
 
-const homeBackground = require('../Assets/images/HeaderView.png'); 
+const homeBackground = require('../Assets/images/HeaderView.png');
+const calenderIcon = require('../Assets/images/calender.png');
+const addTaskIcon = require('../Assets/images/addTask.png');
+
 function Home() {
   const [userName, setUserName] = useState('Umayanga');
   const [selectedDate, setSelectedDate] = useState('');
+  const [showCalender, setShowCalender] = useState(false);
+  const [showNewTask, setShowNewTask] = useState(false);
 
   useEffect(() => {
-    getDate();
+    getTodayDate();
   }, []);
 
   const getDate = () => {
@@ -24,31 +35,79 @@ function Home() {
     console.log(date);
   };
 
+  const openCalender = () => {
+    setShowCalender(!showCalender);
+  };
+
+  const closeCalender = () => {
+    setShowCalender(false);
+  };
+
+  const handleDateSelection = date => {
+    setSelectedDate(date);
+    console.log(date);
+    closeCalender();
+  };
+
+  function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const processedDate = `${year}-${month}-${day}`;
+    setSelectedDate(processedDate);
+  }
+
   return (
     <ImageBackground source={homeBackground} style={{flex: 1}}>
-      <View style={styles.nameContainer}>
-        <Text style={styles.nameText}>
-          Hello {userName} <Text style={styles.waveHand}>👋</Text>
-        </Text>
-      </View>
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <View>
-          <Text style={styles.dayText}>{'Friday'}</Text>
-          <Text style={styles.dateText}>{'10-11-2024'}</Text>
+      <TouchableOpacity onPress={closeCalender}>
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameText}>
+            Hello {userName} <Text style={styles.waveHand}>👋</Text>
+          </Text>
+        </View>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <View>
+            <Text style={styles.dayText}>{'Friday'}</Text>
+            <Text style={styles.dateText}>{'10-11-2024'}</Text>
+          </View>
+          <View style={{display: 'flex', flexDirection: 'row'}}>
+            <View>
+              <TouchableOpacity onPress={() => setShowNewTask(!showNewTask)}>
+                <Image source={addTaskIcon} style={styles.addTaskIcon} />
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => setShowCalender(!showCalender)}>
+                <Image source={calenderIcon} style={styles.calenderIcon} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View
+          style={[
+            styles.calendarContainer,
+            {display: showCalender ? 'flex' : 'none'},
+          ]}>
+          <CustomCalender
+            selectedDate={selectedDate}
+            handleDateSelection={handleDateSelection}
+            setShowCalender={setShowCalender}
+          />
         </View>
         <View>
-          {/* <Calendar
-            onDayPress={day => {
-              console.log('selected day', day);
-            }}
-          /> */}
+          <NewTask
+            date={selectedDate}
+            NewTask={showNewTask}
+            setShowNewTask={setShowNewTask}
+          />
         </View>
-      </View>
+      </TouchableOpacity>
     </ImageBackground>
   );
 }
@@ -82,6 +141,25 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     marginLeft: 20,
+  },
+  calendarContainer: {
+    marginTop: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+  },
+  calenderIcon: {
+    marginTop: 15,
+    width: 38,
+    height: 38,
+    marginRight: 20,
+  },
+  addTaskIcon: {
+    marginTop: 20,
+    width: 30,
+    height: 30,
+    marginRight: 20,
   },
 });
 
