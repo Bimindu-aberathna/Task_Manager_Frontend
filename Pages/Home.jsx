@@ -22,6 +22,7 @@ const homeBackground = require('../Assets/images/HeaderView.png');
 const calenderIcon = require('../Assets/images/calender.png');
 const addTaskIcon = require('../Assets/images/addTask.png');
 const pendingIcon = require('../Assets/images/pending.png');
+const logoutIcon = require('../Assets/images/logout.png');
 
 const demoTasks = [
   {
@@ -214,10 +215,13 @@ function Home() {
     <SafeAreaView style={styles.container}>
       <ImageBackground source={homeBackground} style={styles.backgroundImage}>
         <View style={styles.header}>
-          <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>
-              Hello {userName} <Text style={styles.waveHand}>👋</Text>
-            </Text>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={styles.nameContainer}>
+              <Text style={styles.nameText}>
+                Hello {userName} <Text style={styles.waveHand}>👋</Text>
+              </Text>
+            </View>
+            <Image source={logoutIcon} style={styles.logoutIcon} />
           </View>
           <View style={styles.dateContainer}>
             <View>
@@ -252,14 +256,16 @@ function Home() {
           setShowNewTask={setShowNewTask}
         />
 
-        {selectedTask!=null && <View style={styles.modal}>
-          <ViewTask
-            date={selectedDate}
-            task={selectedTask}
-            setSelectedTaskModal={setSelectedTaskModal}
-            selectedTaskModal={selectedTaskModal}
-          />
-        </View>}
+        {selectedTask != null && (
+          <View style={styles.modal}>
+            <ViewTask
+              date={selectedDate}
+              task={selectedTask}
+              setSelectedTaskModal={setSelectedTaskModal}
+              selectedTaskModal={selectedTaskModal}
+            />
+          </View>
+        )}
 
         <ScrollView style={styles.scrollView}>
           <View style={styles.cardContainer}>
@@ -310,10 +316,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 30,
     fontWeight: 'bold',
-    fontFamily: Platform.select({
-      ios: 'Snell Roundhand',
-      android: 'sans-serif-light',
-    }),
+    fontFamily: 'DancingScriptRegular',
   },
   dateText: {
     color: 'white',
@@ -326,6 +329,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginRight: 20,
+    marginTop: 5,
   },
   calenderIcon: {
     width: 38,
@@ -348,7 +352,16 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     padding: 20,
+    paddingTop: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
     marginBottom: 15,
+  },
+  logoutIcon: {
+    width: 40,
+    height: 40,
+    marginTop: 10,
+    border: '1px solid white',
   },
 });
 
