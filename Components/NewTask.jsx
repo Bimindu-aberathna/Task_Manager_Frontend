@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {View, Text, StyleSheet, TextInput, Touchable, TouchableOpacity, Image} from 'react-native';
 import Modal from 'react-native-modal';
 import {useState} from 'react';
@@ -8,6 +8,29 @@ const closeIcon = require('../Assets/images/cross.png');
 function NewTask({date,NewTask,setShowNewTask}){
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
+  const [error, setError] = useState('');
+
+
+  useEffect(() => {
+    setError('');
+  }, [taskTitle, taskDescription]);
+
+  const validateTask = (title) => {
+    if (title.length < 3) {
+      setError('Title must be at least 3 characters long.');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  const handleSave = () => {
+    if (validateTask(taskTitle)) {
+      console.log('Task saved');
+      setShowNewTask(false);
+    }
+  };
+
   return (
     <View>
       <Modal isVisible={NewTask}>
@@ -17,7 +40,10 @@ function NewTask({date,NewTask,setShowNewTask}){
                 <Image source={closeIcon} style={{width: 35, height: 35, alignSelf: 'flex-end',marginRight: -30,marginTop: -30}}/>
             </TouchableOpacity>
             <Text style={styles.Header}>New Task</Text>
-              <Text style={styles.date}>{date.date}</Text>
+              <Text style={styles.date}>{date}</Text>
+              <Text style={[styles.error,
+                {display: error ? 'block' : 'none'},
+              ]}>{error}</Text>
             <View>
               <Text style={styles.label}>Title:</Text>
               <TextInput
@@ -39,7 +65,7 @@ function NewTask({date,NewTask,setShowNewTask}){
                 style={styles.taskDescription}
               />
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleSave}>
                 <Text style={styles.button}>Save</Text>
             </TouchableOpacity>
           </View>
@@ -110,6 +136,11 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 20,
+    },
+    error: {
+        color: 'red',
+        textAlign: 'center',
+        marginTop: -15,
     },
 });
 
