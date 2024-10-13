@@ -17,6 +17,7 @@ import CustomCalender from '../Components/CustomCalender';
 import NewTask from '../Components/NewTask';
 import TaskCard from '../Components/TaskCard';
 import ViewTask from '../Components/ViewTask';
+import Loading_modal from '../Components/Loading_modal';
 
 const homeBackground = require('../Assets/images/HeaderView.png');
 const calenderIcon = require('../Assets/images/calender.png');
@@ -99,55 +100,6 @@ const demoTasks = [
     date: '2024-11-10',
     status: 0,
   },
-  {
-    id: 11,
-    title: 'Respond to emails',
-    description: 'Reply to any outstanding emails from colleagues and clients',
-    date: '2024-11-10',
-    status: 1,
-  },
-  {
-    id: 12,
-    title: 'Update budget spreadsheet',
-    description: 'Add recent expenses and review monthly savings goal',
-    date: '2024-11-10',
-    status: 0,
-  },
-  {
-    id: 13,
-    title: 'Take a walk outside',
-    description: 'Enjoy a 20-minute walk around the neighborhood to relax',
-    date: '2024-11-10',
-    status: 1,
-  },
-  {
-    id: 14,
-    title: 'Make dinner plans',
-    description: 'Plan and prep ingredients for dinner',
-    date: '2024-11-10',
-    status: 0,
-  },
-  {
-    id: 15,
-    title: 'Complete daily meditation',
-    description: 'Practice meditation for at least 10 minutes',
-    date: '2024-11-10',
-    status: 1,
-  },
-  {
-    id: 16,
-    title: 'Complete daily meditation',
-    description: 'Practice meditation for at least 10 minutes',
-    date: '2024-11-10',
-    status: 1,
-  },
-  {
-    id: 17,
-    title: 'ffffffffffffffffffffftion',
-    description: 'Practice meditation for at least 10 minutes',
-    date: '2024-11-10',
-    status: 1,
-  },
 ];
 
 function Home() {
@@ -214,6 +166,7 @@ function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={homeBackground} style={styles.backgroundImage}>
+        <Loading_modal />
         <View style={styles.header}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <View style={styles.nameContainer}>

@@ -44,7 +44,7 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [next, setNext] = useState(!false);
+  const [next, setNext] = useState(false);
 
   const validateEmail = email => {
     const re = /\S+@\S+\.\S+/;
