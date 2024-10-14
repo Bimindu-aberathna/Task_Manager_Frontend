@@ -49,9 +49,9 @@ const styles = StyleSheet.create({
   },
   task: {
     fontSize: 20,
-    fontWeight: 'bold',
     flex: 1,
     marginRight: 10,
+    color: 'black',
   },
   cardIcon: {
     width: 30,

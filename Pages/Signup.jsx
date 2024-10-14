@@ -162,10 +162,10 @@ function Signup() {
             </View>
 
             <View style={styles.CheckBox}>
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{flexDirection: 'row'}}>
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{flexDirection: 'row',justifyContent: 'flex-end',alignItems: 'center',}}>
                 <Image
                   source={showPassword ? checked : unchecked}
-                  style={{width: 20, height: 20, marginLeft: 5}}
+                  style={{width: 16, height: 16, marginLeft: 5}}
                 />
                 <Text style={styles.showPWDText}>
                   {showPassword ? 'Hide' : 'Show'}
@@ -207,6 +207,7 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     borderColor: 'gray',
+    color: 'black',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
@@ -226,6 +227,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
+    color: 'gray',
   },
   button: {
     backgroundColor: '#4CAF50',
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
   },
   showPWDText: {
     color: 'gray',
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     marginLeft: 5,
     marginBottom: 5,

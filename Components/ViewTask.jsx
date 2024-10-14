@@ -109,20 +109,24 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 16,
+    color: 'black',
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
+    color: 'gray',
   },
   Header: {
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: 'black',
   },
   date: {
     fontSize: 18,
     marginBottom: 15,
     textAlign: 'center',
+    color: 'gray',
   },
   button: {
     backgroundColor: '#f24ec4',

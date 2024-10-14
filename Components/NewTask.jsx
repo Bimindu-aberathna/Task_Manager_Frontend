@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
+    color: 'gray',
   },
     taskDescription: {
         borderColor: 'gray',
@@ -115,16 +116,19 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         paddingHorizontal: 10,
         backgroundColor: 'rgba(255,255,255,0.5)',
+        color: 'black',
     },
     Header: {
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
+        color: 'black',
     },
     date: {
         fontSize: 18,
         marginBottom: 15,
         textAlign: 'center',
+        color: 'gray',
     },
     button: {
         backgroundColor: '#f24ec4',	

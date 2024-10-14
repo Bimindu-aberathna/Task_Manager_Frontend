@@ -35,7 +35,7 @@ function AnimatedErrorMessage({ message, visible }) {
   );
 }
 
-function Login() {
+function Login({navigation}) {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -46,8 +46,7 @@ function Login() {
       setErrorMessage('Please enter both email and password.');
     } else {
       setErrorMessage('');
-      console.log('Login pressed');
-      // Add your login logic here
+      navigation.navigate('Home');
     }
   };
 
@@ -61,6 +60,7 @@ function Login() {
           resizeMode: 'contain',
           top: 0,
           left: 0,
+          marginTop: -15,
         }}
       />
       <KeyboardAvoidingView behavior="padding">
@@ -85,7 +85,7 @@ function Login() {
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
-              style={{flex: 1}}
+              style={{flex: 1,color: 'black'}}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Text style={styles.showPWDText}>
@@ -97,6 +97,9 @@ function Login() {
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
+          
+          <Text style={{textAlign:'center',marginTop:17,marginRight:10,color:'gray'}}>Don't have an account? <Text style={{color:'blue'}} onPress={() => navigation.navigate('Signup')}>Sign up</Text></Text>
+
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -132,6 +135,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 10,
     backgroundColor: 'rgba(255,255,255,0.5)',
+    color: 'black',
   },
   inputBox: {
     borderColor: 'gray',
@@ -144,6 +148,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
+    color: 'black',
     fontSize: 16,
     marginBottom: 5,
   },

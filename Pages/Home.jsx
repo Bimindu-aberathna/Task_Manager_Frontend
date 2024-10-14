@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Calendar, LocaleConfig} from 'react-native-calendars';
+import {CommonActions} from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import CustomCalender from '../Components/CustomCalender';
 import NewTask from '../Components/NewTask';
@@ -102,7 +102,7 @@ const demoTasks = [
   },
 ];
 
-function Home() {
+function Home({navigation}) {
   const [userName, setUserName] = useState('Umayanga');
   const [selectedDate, setSelectedDate] = useState('');
   const [showCalender, setShowCalender] = useState(false);
@@ -114,9 +114,11 @@ function Home() {
     getTodayDate();
   }, []);
 
-  const getDate = () => {
-    const date = new Date();
-    setSelectedDate(date);
+  const limitName = name => {
+    if (name.length > 8) {
+      return name.substring(0, 8) + '..';
+    }
+    return name;
   };
 
   const getDay = date => {
@@ -166,15 +168,25 @@ function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={homeBackground} style={styles.backgroundImage}>
-        <Loading_modal />
         <View style={styles.header}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <View style={styles.nameContainer}>
               <Text style={styles.nameText}>
-                Hello {userName} <Text style={styles.waveHand}>👋</Text>
+                Hello {limitName(userName)}{' '}
+                <Text style={styles.waveHand}>👋</Text>
               </Text>
             </View>
-            <Image source={logoutIcon} style={styles.logoutIcon} />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.dispatch(
+                  CommonActions.reset({
+                    index: 0,
+                    routes: [{name: 'Login'}],
+                  }),
+                );
+              }}>
+              <Image source={logoutIcon} style={styles.logoutIcon} />
+            </TouchableOpacity>
           </View>
           <View style={styles.dateContainer}>
             <View>
@@ -253,7 +265,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   nameText: {
-    fontSize: 35,
+    fontSize: 32,
     color: 'white',
     fontWeight: 'bold',
   },
