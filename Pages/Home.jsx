@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import axios from 'axios';
 import {CommonActions} from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import CustomCalender from '../Components/CustomCalender';
@@ -18,6 +19,7 @@ import NewTask from '../Components/NewTask';
 import TaskCard from '../Components/TaskCard';
 import ViewTask from '../Components/ViewTask';
 import Loading_modal from '../Components/Loading_modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const homeBackground = require('../Assets/images/HeaderView.png');
 const calenderIcon = require('../Assets/images/calender.png');
@@ -102,23 +104,47 @@ const demoTasks = [
   },
 ];
 
-function Home({navigation}) {
-  const [userName, setUserName] = useState('Umayanga');
+function Home({navigation, name}) {
+  const [userName, setUserName] = useState('User');
   const [selectedDate, setSelectedDate] = useState('');
   const [showCalender, setShowCalender] = useState(false);
   const [showNewTask, setShowNewTask] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskModal, setSelectedTaskModal] = useState(!false);
+  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
+    setUserName(name);
     getTodayDate();
+    getUserTasks();
+
+    AsyncStorage.getItem('token').then(value => {
+      console.log('Token-------', value);
+    });
   }, []);
 
+  useEffect(() => {
+    getUserTasks();
+  }, [selectedDate]);
+  //bearer token
+  const getUserTasks = async () => {
+    await axios
+      .get(`/task/getTasks/${selectedDate}`)
+      .then(response => {
+        //console.log(response.data.tasks);
+        setTasks(response.data.tasks);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   const limitName = name => {
-    if (name.length > 8) {
-      return name.substring(0, 8) + '..';
+    const nameStr = String(name);
+    if (nameStr.length > 8) {
+      return nameStr.substring(0, 8) + '..';
     }
-    return name;
+    return nameStr;
   };
 
   const getDay = date => {
@@ -160,9 +186,25 @@ function Home({navigation}) {
     setSelectedDate(processedDate);
   }
 
-  const handleTaskClick = task => {
+  const handleTaskClick = (task) => {
     setSelectedTask(task);
     setSelectedTaskModal(true);
+  };
+
+  const logout = async () => {
+    try {
+      const response = await axios.post('/logout');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        })
+      );
+      await AsyncStorage.removeItem('token');
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -177,13 +219,9 @@ function Home({navigation}) {
               </Text>
             </View>
             <TouchableOpacity
+              
               onPress={() => {
-                navigation.dispatch(
-                  CommonActions.reset({
-                    index: 0,
-                    routes: [{name: 'Login'}],
-                  }),
-                );
+                logout();
               }}>
               <Image source={logoutIcon} style={styles.logoutIcon} />
             </TouchableOpacity>
@@ -219,6 +257,7 @@ function Home({navigation}) {
           date={selectedDate}
           NewTask={showNewTask}
           setShowNewTask={setShowNewTask}
+          getUserTasks={getUserTasks}
         />
 
         {selectedTask != null && (
@@ -228,17 +267,18 @@ function Home({navigation}) {
               task={selectedTask}
               setSelectedTaskModal={setSelectedTaskModal}
               selectedTaskModal={selectedTaskModal}
+              getUserTasks={getUserTasks}
             />
           </View>
         )}
 
         <ScrollView style={styles.scrollView}>
           <View style={styles.cardContainer}>
-            {demoTasks.map(task => (
+            {tasks.map(task => (
               <TouchableOpacity onPress={() => handleTaskClick(task)}>
                 <TaskCard
                   title={task.title}
-                  status={task.status}
+                  status={task.completed}
                   key={task.id}
                 />
               </TouchableOpacity>

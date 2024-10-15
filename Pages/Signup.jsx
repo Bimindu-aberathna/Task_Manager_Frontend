@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Animated,
 } from 'react-native';
+import axios from 'axios';
 
 const loginBackground = require('../Assets/images/Header.png');
 const logo = require('../Assets/images/logo.png');
@@ -37,7 +38,7 @@ function AnimatedErrorMessage({message, visible}) {
   );
 }
 
-function Signup() {
+function Signup({navigation}) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -68,7 +69,35 @@ function Signup() {
       setNext(true);
     }
   };
-  const handleRegister = () => {};
+  const handleRegister = async () => {
+    if (!password || !confirmPassword) {
+      setErrorMessage('Please enter both password and confirm password.');
+    } else if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match.');
+    } else {
+      setErrorMessage('');
+      try {
+        const response = await axios.post(
+          'http://172.16.26.69:8000/api/register',
+          {
+            email: email,
+            name: name,
+            password: password,
+          },
+        );
+        console.log(response.data);
+        if (response.data.error) {
+          setErrorMessage('Error Occurred');
+        } else {
+          setErrorMessage('');
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.log(error);
+        setErrorMessage('An error occurred. Please try again later.');
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -162,7 +191,13 @@ function Signup() {
             </View>
 
             <View style={styles.CheckBox}>
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{flexDirection: 'row',justifyContent: 'flex-end',alignItems: 'center',}}>
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}>
                 <Image
                   source={showPassword ? checked : unchecked}
                   style={{width: 16, height: 16, marginLeft: 5}}
@@ -268,7 +303,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginBottom: 5,
   },
-
 });
 
 export default Signup;

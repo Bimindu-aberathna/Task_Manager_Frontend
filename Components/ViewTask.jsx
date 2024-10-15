@@ -1,20 +1,31 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Modal from 'react-native-modal';
+import axios from 'axios';
 
 const closeIcon = require('../Assets/images/cross.png');
 
-function ViewTask({date, task, setSelectedTaskModal, selectedTaskModal}) {
+function ViewTask({date, task, setSelectedTaskModal, selectedTaskModal,getUserTasks}) {
   const [currentTask, setCurrentTask] = useState(task);
 
-  const setTaskCompleted = () => {
-    const updatedTask = {...currentTask, status: 1};
-    setCurrentTask(updatedTask);
+  const setTaskCompleted = async() => {
+    await axios.post(`/task/setCompleted/${task.id}`).then((response) => {
+      setCurrentTask(response.data);
+      getUserTasks();
+      setSelectedTaskModal(false);
+    }).catch((error) => {
+      console.log(error);
+    });
   };
 
-  const setTaskIncomplete = () => {
-    const updatedTask = {...currentTask, status: 0};
-    setCurrentTask(updatedTask);
+  const setTaskIncomplete = async() => {
+    await axios.post(`/task/setNotCompleted/${task.id}`).then((response) => {
+      setCurrentTask(response.data);
+      getUserTasks();
+      setSelectedTaskModal(false);
+    }).catch((error) => {
+      console.log(error);
+    });
   };
 
   return (
@@ -41,13 +52,13 @@ function ViewTask({date, task, setSelectedTaskModal, selectedTaskModal}) {
                 <Text style={styles.inputText}>{task.description}</Text>
               </View>
             </View>
-            {task.status === 0 && (
-              <TouchableOpacity onPress={() => setTaskStatus(1)}>
+            {task.completed === 0 && (
+              <TouchableOpacity onPress={setTaskCompleted}>
                 <Text style={styles.button}>Set Completed</Text>
               </TouchableOpacity>
             )}
-            {task.status === 1 && (
-              <TouchableOpacity onPress={() => setTaskStatus(0)}>
+            {task.completed === 1 && (
+              <TouchableOpacity onPress={setTaskIncomplete}>
                 <Text style={styles.button}>Set Incomplete</Text>
               </TouchableOpacity>
             )}

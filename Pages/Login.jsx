@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,13 +9,19 @@ import {
   Button,
   Image,
   KeyboardAvoidingView,
-  Animated,
+  Animated
 } from 'react-native';
+
+import Loading_modal from '../Components/Loading_modal';
+
+
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const loginBackground = require('../Assets/images/Header.png'); // Adjust the path to your image
 const logo = require('../Assets/images/logo.png'); // Adjust the path to your image
 
-function AnimatedErrorMessage({ message, visible }) {
+function AnimatedErrorMessage({message, visible}) {
   const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -29,29 +35,55 @@ function AnimatedErrorMessage({ message, visible }) {
   if (!visible && opacity._value === 0) return null;
 
   return (
-    <Animated.View style={[styles.errorContainer, { opacity }]}>
+    <Animated.View style={[styles.errorContainer, {opacity}]}>
       <Text style={styles.errorText}>{message}</Text>
     </Animated.View>
   );
 }
 
-function Login({navigation}) {
+function Login({ navigation, setName }) {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+
+  const saveTokenToAsync = async (data) =>{
+    await AsyncStorage.setItem('token', data);
+  }
 
   const handleLogin = () => {
     if (!userName || !password) {
       setErrorMessage('Please enter both email and password.');
     } else {
       setErrorMessage('');
-      navigation.navigate('Home');
+      axios
+        .post('/login', {
+          email: userName,
+          password: password,
+        })
+        .then(response => {
+          console.log(response.data);
+          if (response.data.error) {
+            setErrorMessage("Email or password doesn't match.");
+          } else {
+            setErrorMessage('');
+            //console.log(response.data.token);
+            saveTokenToAsync(response.data.token);
+            setName(response.data.user_name);
+            navigation.navigate('Home');
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          setErrorMessage('An error occurred. Please try again later.');
+        });
     }
   };
 
   return (
     <View style={styles.container}>
+      {/* <Loading_modal /> */}
       <Image
         source={loginBackground}
         style={{
@@ -65,9 +97,20 @@ function Login({navigation}) {
       />
       <KeyboardAvoidingView behavior="padding">
         <View style={styles.loginBox}>
-          <Image source={logo} style={{ width: 100, height: 100, alignSelf: 'center',marginTop: -50 }} />
-          <AnimatedErrorMessage message={errorMessage} visible={!!errorMessage} />
-          
+          <Image
+            source={logo}
+            style={{
+              width: 100,
+              height: 100,
+              alignSelf: 'center',
+              marginTop: -50,
+            }}
+          />
+          <AnimatedErrorMessage
+            message={errorMessage}
+            visible={!!errorMessage}
+          />
+
           <View>
             <Text style={styles.label}>Email:</Text>
             <TextInput
@@ -77,7 +120,7 @@ function Login({navigation}) {
               onChangeText={setUserName}
             />
           </View>
-          
+
           <Text style={styles.label}>Password:</Text>
           <View style={styles.inputBox}>
             <TextInput
@@ -85,7 +128,7 @@ function Login({navigation}) {
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
-              style={{flex: 1,color: 'black'}}
+              style={{flex: 1, color: 'black'}}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Text style={styles.showPWDText}>
@@ -97,9 +140,21 @@ function Login({navigation}) {
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-          
-          <Text style={{textAlign:'center',marginTop:17,marginRight:10,color:'gray'}}>Don't have an account? <Text style={{color:'blue'}} onPress={() => navigation.navigate('Signup')}>Sign up</Text></Text>
 
+          <Text
+            style={{
+              textAlign: 'center',
+              marginTop: 17,
+              marginRight: 10,
+              color: 'gray',
+            }}>
+            Don't have an account?{' '}
+            <Text
+              style={{color: 'blue'}}
+              onPress={() => navigation.navigate('Signup')}>
+              Sign up
+            </Text>
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </View>

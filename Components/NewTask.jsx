@@ -1,21 +1,29 @@
-import React, { useEffect } from 'react';
-import {View, Text, StyleSheet, TextInput, Touchable, TouchableOpacity, Image} from 'react-native';
+import React, {useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Touchable,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import {useState} from 'react';
+import axios from 'axios';
 
 const closeIcon = require('../Assets/images/cross.png');
 
-function NewTask({date,NewTask,setShowNewTask}){
+function NewTask({date, NewTask, setShowNewTask, getUserTasks}) {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [error, setError] = useState('');
-
 
   useEffect(() => {
     setError('');
   }, [taskTitle, taskDescription]);
 
-  const validateTask = (title) => {
+  const validateTask = title => {
     if (title.length < 3) {
       setError('Title must be at least 3 characters long.');
       return false;
@@ -24,10 +32,20 @@ function NewTask({date,NewTask,setShowNewTask}){
     return true;
   };
 
-  const handleSave = () => {
-    if (validateTask(taskTitle)) {
-      console.log('Task saved');
+  const handleSave = async () => {
+    if (!validateTask(taskTitle)) return;
+
+    try {
+      await axios.post('/task/new', {
+        title: taskTitle,
+        description: taskDescription,
+        due_date: date,
+      });
+      console.log({title: taskTitle, description: taskDescription, due_date: date});
+      getUserTasks();
       setShowNewTask(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -37,13 +55,22 @@ function NewTask({date,NewTask,setShowNewTask}){
         <View style={styles.modal}>
           <View style={styles.modalContent}>
             <TouchableOpacity onPress={() => setShowNewTask(false)}>
-                <Image source={closeIcon} style={{width: 35, height: 35, alignSelf: 'flex-end',marginRight: -30,marginTop: -30}}/>
+              <Image
+                source={closeIcon}
+                style={{
+                  width: 35,
+                  height: 35,
+                  alignSelf: 'flex-end',
+                  marginRight: -30,
+                  marginTop: -30,
+                }}
+              />
             </TouchableOpacity>
             <Text style={styles.Header}>New Task</Text>
-              <Text style={styles.date}>{date}</Text>
-              <Text style={[styles.error,
-                {display: error ? 'block' : 'none'},
-              ]}>{error}</Text>
+            <Text style={styles.date}>{date}</Text>
+            <Text style={[styles.error, {display: error ? 'block' : 'none'}]}>
+              {error}
+            </Text>
             <View>
               <Text style={styles.label}>Title:</Text>
               <TextInput
@@ -66,7 +93,7 @@ function NewTask({date,NewTask,setShowNewTask}){
               />
             </View>
             <TouchableOpacity onPress={handleSave}>
-                <Text style={styles.button}>Save</Text>
+              <Text style={styles.button}>Save</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -109,43 +136,43 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: 'gray',
   },
-    taskDescription: {
-        borderColor: 'gray',
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15,
-        paddingHorizontal: 10,
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        color: 'black',
-    },
-    Header: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: 'black',
-    },
-    date: {
-        fontSize: 18,
-        marginBottom: 15,
-        textAlign: 'center',
-        color: 'gray',
-    },
-    button: {
-        backgroundColor: '#f24ec4',	
-        borderRadius: 5,
-        padding: 12,
-        alignItems: 'center',
-        marginTop: 5,
-        textAlign: 'center',
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-    error: {
-        color: 'red',
-        textAlign: 'center',
-        marginTop: -15,
-    },
+  taskDescription: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    color: 'black',
+  },
+  Header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'black',
+  },
+  date: {
+    fontSize: 18,
+    marginBottom: 15,
+    textAlign: 'center',
+    color: 'gray',
+  },
+  button: {
+    backgroundColor: '#f24ec4',
+    borderRadius: 5,
+    padding: 12,
+    alignItems: 'center',
+    marginTop: 5,
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: -15,
+  },
 });
 
 export default NewTask;
